@@ -10,24 +10,26 @@ export class UserController {
         private _queryBus: QueryBusInterface,
     ) { }
 
-    public getAllUsers(successCallback: Function, failCallback: Function) {
+    public getAllUsers(successCallback: Function, failCallback: Function): void {
         const query = new GetAllUsersQuery()
         query.setSuccessCallback(successCallback)
         query.setFailCallback(failCallback)
         this._queryBus.execute(query)
     }
 
-    public getUserById(id: string, successCallback: Function, failCallback: Function) {
+    public getUserById(id: string, successCallback: Function, failCallback: Function): void {
         const query = new GetUserByIdQuery(id)
         query.setSuccessCallback(successCallback)
         query.setFailCallback(failCallback)
         this._queryBus.execute(query)
     }
 
-    public createUser(id: string, login: string, password: string, successCallback: Function, failCallback: Function) {
+    public createUser(id: string, login: string, password: string, successCallback: Function, failCallback: Function): void {
         const command = new CreateUserCommand(id, login, password)
         command.setSuccessCallback(successCallback)
         command.setFailCallback(failCallback)
         this._commandBus.execute(command)
     }
+
+    public validateUser(login: string, password: string) { }
 }

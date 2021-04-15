@@ -7,7 +7,7 @@ export class DomainEvent implements DomainEventInterface {
     public constructor(
         public readonly name: string,
         public readonly agregateId: string,
-        public readonly data: [string, any][]
+        public readonly data: string
     ) {
         this.timeStamp = TimeStampGenerator.generate()
     }

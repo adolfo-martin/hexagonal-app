@@ -1,4 +1,4 @@
-import { UserRepositoryInterface } from "../user/domain/repository/UserRepositoryInterface"
+import { UserRepositoryInterface } from "../user.management/domain/repository/UserRepositoryInterface"
 import { CommandBusInterface } from "./command/CommandBusInterface"
 import { DomainEventDispatcher } from "./event/DomainEventDispatcher"
 import { QueryBusInterface } from "./query/QueryBusInterface"
