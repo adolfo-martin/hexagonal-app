@@ -17,7 +17,7 @@ export class CommandAdapter implements CommandInterface {
         this._failCallback = callback
     }
 
-    executeSuccessCallback(): void {
+    executeSuccessCallback(response: any): void {
         this._successCallback()
     }
 

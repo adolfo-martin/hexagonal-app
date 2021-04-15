@@ -1,6 +1,8 @@
 import { CommandBusInterface } from "../../shared.kernel/command/CommandBusInterface"
 import { QueryBusInterface } from "../../shared.kernel/query/QueryBusInterface"
+import { UuidGenerator } from "../../shared.kernel/utilities/UuidGenerator"
 import { CreateUserCommand } from "../domain/command/CreateUserCommand"
+import { OpenUserSessionCommand } from "../domain/command/OpenUserSessionCommand"
 import { GetAllUsersQuery } from "../domain/query/GetAllUsersQuery"
 import { GetUserByIdQuery } from "../domain/query/GetUserByIdQuery"
 
@@ -24,12 +26,21 @@ export class UserController {
         this._queryBus.execute(query)
     }
 
-    public createUser(id: string, login: string, password: string, successCallback: Function, failCallback: Function): void {
+    public createUser(login: string, password: string, successCallback: Function, failCallback: Function): void {
+        const id: string = UuidGenerator.generate()
+
         const command = new CreateUserCommand(id, login, password)
         command.setSuccessCallback(successCallback)
         command.setFailCallback(failCallback)
         this._commandBus.execute(command)
     }
 
-    public validateUser(login: string, password: string) { }
+    public openUserSession(login: string, password: string, successCallback: Function, failCallback: Function) {
+        const token = 'TOKEN'
+
+        const command = new OpenUserSessionCommand(login, password, token)
+        command.setSuccessCallback(successCallback)
+        command.setFailCallback(failCallback)
+        this._commandBus.execute(command)
+    }
 }

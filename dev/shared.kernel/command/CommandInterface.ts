@@ -1,7 +1,7 @@
 export interface CommandInterface {
     className: string
     setSuccessCallback(callback: Function): void
-    executeSuccessCallback(): void
+    executeSuccessCallback(response: any): void
     setFailCallback(callback: Function): void
     executeFailCallback(message: string): void
 }

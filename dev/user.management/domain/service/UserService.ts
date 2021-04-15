@@ -10,7 +10,7 @@ export class UserService implements UserServiceInterface {
         private _userRepository: UserRepositoryInterface,
     ) { }
 
-    public async validateUser(id: string, password: string, token: string): Promise<boolean> {
+    public async validateUserCredentials(id: string, password: string): Promise<boolean> {
         const user = await this._userRepository.retrieveUserById(id)
         return user.isValidPassword(password)
     }

@@ -2,11 +2,19 @@ GET http://127.0.0.1:5000/api/users
 
 ###
 
-GET http://127.0.0.1:5000/api/user/4b8715db-3f40-4209-83dc-3f8d4f86bdd1
+GET http://127.0.0.1:5000/api/user/960c883e-353d-4aa5-ba3c-cd6da55001c0
 
 ###
 
 POST http://127.0.0.1:5000/api/user
+content-type: application/x-www-form-urlencoded
+
+login=pepe
+&password=p
+
+###
+
+POST http://127.0.0.1:5000/api/useropen
 content-type: application/x-www-form-urlencoded
 
 login=pepe

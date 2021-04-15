@@ -6,6 +6,7 @@ import { UserServiceInterface } from "../../domain/service/UserServiceInterface"
 
 
 export class CreateUserCommandHandler implements CommandHandlerInterface {
+
     public constructor(private _userService: UserServiceInterface) { }
 
     public handle(command: CommandInterface): void {
@@ -15,19 +16,16 @@ export class CreateUserCommandHandler implements CommandHandlerInterface {
             );
         }
 
-        const id = command.id
-        const login = command.login
-        const password = command.password
+        const { id, login, password } = command
 
         if (!id || !login || !password) {
-            command.executeFailCallback('Parameter id, login or password is missing')
+            command.executeFailCallback('Argument id, login or password is missing')
             return
         }
 
         try {
-            this._userService.createUser(id, login, password).then(() => {
-                command.executeSuccessCallback()
-            })
+            this._userService.createUser(id, login, password)
+                .then(() => command.executeSuccessCallback(id))
         } catch (error) {
             command.executeFailCallback(error.message)
         }
