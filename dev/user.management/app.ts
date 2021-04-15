@@ -1,6 +1,7 @@
 import { Application } from "../shared.kernel/Application"
 import { DomainEventDispatcher } from "../shared.kernel/event/DomainEventDispatcher"
 import { CreateUserCommandHandler } from "./application/command.handler/CreateUserCommandHandler"
+import { OpenUserSessionCommandHandler } from "./application/command.handler/OpenUserSessionCommandHandler"
 import { GetAllUsersQueryHandler } from "./application/query.handler/GetAllUsersQueryHandler"
 import { GetUserByIdQueryHandler } from "./application/query.handler/GetUserByIdQueryHandler"
 import { UserCreatedDomainEvent } from "./domain/event/UserCreatedDomainEvent"
@@ -33,6 +34,11 @@ function runnable() {
     commandBus.register(
         'CreateUserCommand',
         new CreateUserCommandHandler(userService)
+    )
+
+    commandBus.register(
+        'OpenUserSessionCommand',
+        new OpenUserSessionCommandHandler(userService)
     )
 
     queryBus.register(

@@ -33,8 +33,8 @@ export class UserWebService {
 
         this._app.get('/api/users', this.sendUsers.bind(this))
         this._app.get('/api/user/:id', this.sendUser.bind(this))
-        this._app.post('/api/useropen', this.openUserSession.bind(this))
-        //this._app.post('/api/user', this.createUser.bind(this))
+        this._app.post('/api/user', this.createUser.bind(this))
+        this._app.post('/api/user/open-session', this.openUserSession.bind(this))
     }
 
     public listen(): void {
@@ -73,13 +73,9 @@ export class UserWebService {
 
     // @ts-ignore: Unreachable code error
     private openUserSession(req, res, next) {
-        console.log(1);
         const login: string = req.body.login
-        console.log(2);
         const password: string = req.body.password
-        console.log(3);
         console.log(login, password);
-
 
         const sendSuccessResponse = (token: string) => res.send({ ok: true, result: { token } })
         const sendFailResponse = (error: string) => res.send({ ok: false, result: { error } })
