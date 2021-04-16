@@ -17,5 +17,5 @@ login=pepe
 POST http://127.0.0.1:5000/api/user/open-session
 content-type: application/x-www-form-urlencoded
 
-login=pepe
-&password=p
+login=adolfo
+&password=a

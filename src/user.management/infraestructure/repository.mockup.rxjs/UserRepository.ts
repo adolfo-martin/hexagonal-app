@@ -19,7 +19,15 @@ export class UserRepository {
     }
 
     public static getById$(id: string): Observable<User | undefined> {
-        return of(UserRepository._users.find(user => user.id === id)).pipe(delay(2000))
+        return of(UserRepository._users
+            .find(user => user.id === id))
+            .pipe(delay(2000))
+    }
+
+    public static getByLoginPassword$(login: string, password: string): Observable<User | undefined> {
+        return of(UserRepository._users
+            .find(user => user.login === login && user.password === password))
+            .pipe(delay(2000))
     }
 
     public static create$(id: string, login: string, password: string): Observable<void> {

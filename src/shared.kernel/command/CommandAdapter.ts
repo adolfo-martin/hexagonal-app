@@ -9,19 +9,19 @@ export class CommandAdapter implements CommandInterface {
         this._failCallback = () => { }
     }
 
-    setSuccessCallback(callback: Function): void {
+    public setSuccessCallback(callback: Function): void {
         this._successCallback = callback
     }
 
-    setFailCallback(callback: Function): void {
+    public setFailCallback(callback: Function): void {
         this._failCallback = callback
     }
 
-    executeSuccessCallback(response: any): void {
-        this._successCallback()
+    public executeSuccessCallback(response: any): void {
+        this._successCallback(response)
     }
 
-    executeFailCallback(message: string): void {
+    public executeFailCallback(message: string): void {
         this._failCallback(message)
     }
 }

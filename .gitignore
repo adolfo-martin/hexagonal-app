@@ -1,4 +1,4 @@
 /dist
-/dev/node_modules/
+/src/node_modules/
 /*.ts
 /*.zip
