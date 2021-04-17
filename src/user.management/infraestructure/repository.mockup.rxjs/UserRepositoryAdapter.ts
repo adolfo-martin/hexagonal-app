@@ -1,4 +1,3 @@
-
 import { UserRepository } from './UserRepository'
 import { User as UserP } from './User'
 import { map } from 'rxjs/operators'
@@ -6,13 +5,25 @@ import { User } from '../../domain/model/User'
 import { UserRepositoryInterface } from '../../domain/repository/UserRepositoryInterface'
 
 export class UserRepositoryAdapter implements UserRepositoryInterface {
-    retrieveUserByLoginAndPassword(login: string, password: string): Promise<User> {
+    retrieveUserByLoginAndPassword(
+        login: string,
+        password: string
+    ): Promise<User> {
         // @ts-ignore: Unreachable code error
-        const userPromise: Promise<User> = UserRepository
-            .getByLoginPassword$(login, password)
+        const userPromise: Promise<User> = UserRepository.getByLoginPassword$(
+            login,
+            password
+        )
             .pipe(
-                map(userP => (userP ? userP : new UserP('void', 'undefined', 'u'))),
-                map(({ id, login, password }) => new User(id, login, password))
+                map(userP =>
+                    userP
+                        ? userP
+                        : new UserP('void', 'undefined', 'u', 'normal')
+                ),
+                map(
+                    ({ id, login, password, type }) =>
+                        new User(id, login, password, type)
+                )
             )
             .toPromise()
         // if (!userP) {
@@ -23,10 +34,14 @@ export class UserRepositoryAdapter implements UserRepositoryInterface {
 
     retrieveAllUsers(): Promise<User[]> {
         // @ts-ignore: Unreachable code error
-        const usersPromise: Promise<User[]> = UserRepository
-            .getAll$()
+        const usersPromise: Promise<User[]> = UserRepository.getAll$()
             .pipe(
-                map(users => users.map(({ id, login, password }) => new User(id, login, password)))
+                map(users =>
+                    users.map(
+                        ({ id, login, password, type }) =>
+                            new User(id, login, password, type)
+                    )
+                )
             )
             .toPromise()
 
@@ -35,11 +50,17 @@ export class UserRepositoryAdapter implements UserRepositoryInterface {
 
     retrieveUserById(id: string): Promise<User> {
         // @ts-ignore: Unreachable code error
-        const userPromise: Promise<User> = UserRepository
-            .getById$(id)
+        const userPromise: Promise<User> = UserRepository.getById$(id)
             .pipe(
-                map(userP => (userP ? userP : new UserP('void', 'undefined', 'u'))),
-                map(({ id, login, password }) => new User(id, login, password))
+                map(userP =>
+                    userP
+                        ? userP
+                        : new UserP('void', 'undefined', 'u', 'normal')
+                ),
+                map(
+                    ({ id, login, password, type }) =>
+                        new User(id, login, password, type)
+                )
             )
             .toPromise()
         // if (!userP) {
@@ -48,10 +69,18 @@ export class UserRepositoryAdapter implements UserRepositoryInterface {
         return userPromise
     }
 
-    createUser(id: string, login: string, password: string): Promise<void> {
-        const userPromise: Promise<void> = UserRepository
-            .create$(id, login, password)
-            .toPromise()
+    createUser(
+        id: string,
+        login: string,
+        password: string,
+        type: string
+    ): Promise<void> {
+        const userPromise: Promise<void> = UserRepository.create$(
+            id,
+            login,
+            password,
+            type
+        ).toPromise()
         return userPromise
     }
 }

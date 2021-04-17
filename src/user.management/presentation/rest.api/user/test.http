@@ -11,6 +11,7 @@ content-type: application/x-www-form-urlencoded
 
 login=pepe
 &password=p
+&type=normal
 
 ###
 
