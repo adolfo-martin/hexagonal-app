@@ -8,11 +8,12 @@ import { UserController } from '../../UserController'
 import { CommandBusInterface } from '../../../../shared.kernel/command/CommandBusInterface'
 import { QueryBusInterface } from '../../../../shared.kernel/query/QueryBusInterface'
 import { User } from '../../User'
-import { UuidGenerator } from '../../../../shared.kernel/utilities/UuidGenerator'
 
 export class UserWebService {
-    private _app
+    // @ts-ignore: Unreachable code error
+    private _app: express.Express
     private _userController: UserController
+
 
     constructor(
         private _port: number,
@@ -21,21 +22,37 @@ export class UserWebService {
     ) {
         this._userController = new UserController(this._commandBus, this._queryBus)
 
+        this._setupExpressServer()
+        this._configureValidRoutes()
+        this._configureInvalidRoutes()
+    }
+
+
+    private _setupExpressServer() {
         this._app = express()
         this._app.use(cors())
         this._app.use(bodyParser.json())
         this._app.use(bodyParser.urlencoded({ extended: true }))
 
-        // @ts-ignore: Unreachable code error
-        this._app.get('/', (req, res, next) =>
-            res.send({ ok: false, result: 'Please, you have to use our API' })
-        )
-
-        this._app.get('/api/users', this.sendUsers.bind(this))
-        this._app.get('/api/user/:id', this.sendUser.bind(this))
-        this._app.post('/api/user', this.createUser.bind(this))
-        this._app.post('/api/user/open-session', this.openUserSession.bind(this))
+        this._configureValidRoutes()
+        this._configureInvalidRoutes()
     }
+
+
+    private _configureValidRoutes() {
+        this._app.get('/api/users', this._sendUsers.bind(this))
+        this._app.get('/api/user/:id', this._sendUser.bind(this))
+        this._app.post('/api/user', this._createUser.bind(this))
+        this._app.post('/api/user/authenticate', this._openUserSession.bind(this));
+    }
+
+
+    private _configureInvalidRoutes() {
+        this._app.all('*', (req, res, next) =>
+            res.status(404).send({ ok: false, result: 'Please, you have to use our API' })
+        )
+    }
+
 
     public listen(): void {
         this._app.listen(this._port, () =>
@@ -43,15 +60,33 @@ export class UserWebService {
         )
     }
 
-    // @ts-ignore: Unreachable code error
-    private sendUsers(req, res, next) {
+
+    private async _sendUsers(
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) {
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(' ')[1]
+        if (!token) {
+            res.status(401).send({ ok: false, result: { error: 'Token is not valid. User must validate again.' } })
+            return
+        }
+
+        const remoteAddress = req.socket.remoteAddress
+        if (!remoteAddress) {
+            res.status(401).send({ ok: false, result: { error: 'Cannot get remote access.' } })
+            return
+        }
+
         const sendSuccessResponse = (users: User[]) => res.send({ ok: true, result: { users } })
-        const sendFailResponse = (error: string) => res.send({ ok: false, result: { error } })
-        this._userController.getAllUsers(sendSuccessResponse, sendFailResponse)
+        const sendFailResponse = (error: string) => res.status(401).send({ ok: false, result: { error } })
+
+        this._userController.getAllUsers(sendSuccessResponse, sendFailResponse, token, remoteAddress)
     }
 
-    // @ts-ignore: Unreachable code error
-    private sendUser(req, res, next) {
+
+    private async _sendUser(req: express.Request, res: express.Response, next: express.NextFunction) {
         const id: string = req.params.id
 
         const sendSuccessResponse = (user: User) => res.send({ ok: true, result: { user } })
@@ -60,8 +95,8 @@ export class UserWebService {
         this._userController.getUserById(id, sendSuccessResponse, sendFailResponse)
     }
 
-    // @ts-ignore: Unreachable code error
-    private async createUser(req, res, next) {
+
+    private async _createUser(req: express.Request, res: express.Response, next: express.NextFunction) {
         const login: string = req.body.login
         const password: string = req.body.password
 
@@ -71,15 +106,20 @@ export class UserWebService {
         this._userController.createUser(login, password, sendSuccessResponse, sendFailResponse)
     }
 
-    // @ts-ignore: Unreachable code error
-    private openUserSession(req, res, next) {
+
+    private async _openUserSession(req: express.Request, res: express.Response, next: express.NextFunction) {
         const login: string = req.body.login
         const password: string = req.body.password
-        console.log(login, password);
+        // const remoteAddress: string = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+        const remoteAddress = req.socket.remoteAddress
+        if (!remoteAddress) {
+            res.status(401).send({ ok: false, result: { error: 'Cannot get remote access.' } })
+            return
+        }
 
         const sendSuccessResponse = (token: string) => res.send({ ok: true, result: { token } })
         const sendFailResponse = (error: string) => res.send({ ok: false, result: { error } })
 
-        this._userController.openUserSession(login, password, sendSuccessResponse, sendFailResponse)
+        this._userController.openUserSession(login, password, remoteAddress, sendSuccessResponse, sendFailResponse)
     }
 }

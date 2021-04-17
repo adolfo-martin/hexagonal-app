@@ -14,8 +14,14 @@ login=pepe
 
 ###
 
-POST http://127.0.0.1:5000/api/user/open-session
+POST http://127.0.0.1:5000/api/user/authenticate
 content-type: application/x-www-form-urlencoded
 
 login=adolfo
 &password=a
+
+###
+
+GET http://127.0.0.1:5000/api/users 
+Content-Type: application/x-www-form-urlencoded 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb2dpbiI6ImFkb2xmbyIsInJlbW90ZUFkZHJlc3MiOiI6OmZmZmY6MTI3LjAuMC4xIiwiaWF0IjoxNjE4NjQ3MTQ4LCJleHAiOjE2MTg2NDcxNzh9.O4Tfb_rK25LDv0VXxCW8mOwPlse8MHVahZX1lSreid8
