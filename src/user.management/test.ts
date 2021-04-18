@@ -63,37 +63,72 @@ function runnable() {
 }
 
 function testRestApi() {
-    console.log('Beginning testRestApi')
+    testWrongUserCredentials()
+    testRightUserCredentials()
 
-    const url = 'http://127.0.0.1:5000/api/user/authenticate'
-    
-    const data = {
-        login: 'adolfo',
-        password: 'p',
+    function testWrongUserCredentials() {
+        const url = 'http://127.0.0.1:5000/api/user/authenticate'
+        
+        const data = {
+            login: 'adolfo',
+            password: 'wrong',
+        }
+
+        function createXHR() {
+            return new XMLHttpRequest();
+        }
+        
+        ajax({
+            url,
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            createXHR,
+            crossDomain: true,
+            // withCredentials: false,
+            body: JSON.stringify(data),
+        })
+        .pipe(
+            map(response => console.error('[FAIL] Wrong user.')),
+            // @ts-ignore: Unreachable code error
+            catchError(_ => console.log('[OK] Wrong user.')),
+        )
+        .subscribe()
     }
 
-    function createXHR() {
-        return new XMLHttpRequest();
+    function testRightUserCredentials() {
+        const url = 'http://127.0.0.1:5000/api/user/authenticate'
+        
+        const data = {
+            login: 'adolfo',
+            password: 'a',
+        }
+
+        function createXHR() {
+            return new XMLHttpRequest();
+        }
+        
+        ajax({
+            url,
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            createXHR,
+            crossDomain: true,
+            // withCredentials: false,
+            body: JSON.stringify(data),
+        })
+        .pipe(
+            map(response => console.error('[OK] Right user.')),
+            // @ts-ignore: Unreachable code error
+            catchError(_ => console.log('[Wrong] Right user.')),
+        )
+        .subscribe()
     }
-    
-    ajax({
-        url,
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        createXHR,
-        crossDomain: true,
-        // withCredentials: false,
-        body: JSON.stringify(data),
-    })
-    .pipe(
-        map(response => console.error('[FAIL] Test 001. Wrong user.')),
-        // @ts-ignore: Unreachable code error
-        catchError(_ => console.log('[OK] Test 001. Wrong user.')),
-    )
-    .subscribe()
 }
 
 
