@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "tsc && node ../dist/src/user.management/app.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "tsc && node ../dist/src/user.management/test.js"
     },
     "keywords": [],
     "author": "",
@@ -22,6 +22,7 @@
         "cors": "^2.8.5",
         "express": "^4.17.1",
         "jsonwebtoken": "^8.5.1",
-        "rxjs": "^6.6.7"
+        "rxjs": "^6.6.7",
+        "xmlhttprequest": "^1.8.0"
     }
 }

@@ -41,9 +41,27 @@ export class UserWebService {
     }
 
     private _configureValidRoutes() {
-        this._app.get('/api/users', this._sendUsers.bind(this))
-        this._app.get('/api/user/:id', this._sendUser.bind(this))
-        this._app.post('/api/user', this._createUser.bind(this))
+        this._app.get(
+            '/api/users',
+            this._validateToken.bind(this), 
+            this._validateAdministratorCredentials.bind(this), 
+            this._sendUsers.bind(this)
+        )
+
+        this._app.get(
+            '/api/user/:id', 
+            this._validateToken.bind(this), 
+            this._validateAdministratorCredentials.bind(this), 
+            this._sendUser.bind(this)
+        )
+
+        this._app.post(
+            '/api/user', 
+            this._validateToken.bind(this), 
+            this._validateAdministratorCredentials.bind(this), 
+            this._createUser.bind(this)
+        )
+
         this._app.post(
             '/api/user/authenticate',
             this._openUserSession.bind(this)
@@ -71,7 +89,7 @@ export class UserWebService {
         )
     }
 
-    private async _sendUsers(
+    private _validateToken(
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
@@ -85,6 +103,7 @@ export class UserWebService {
                     error: 'Token is not valid. User must validate again.',
                 },
             })
+            res.locals.authenticated = false
             return
         }
 
@@ -94,6 +113,7 @@ export class UserWebService {
                 ok: false,
                 result: { error: 'Cannot get remote access.' },
             })
+            res.locals.authenticated = false
             return
         }
 
@@ -104,9 +124,40 @@ export class UserWebService {
                     error: 'Token is not valid. User must validate again.',
                 },
             })
+            res.locals.authenticated = false
             return
         }
 
+        res.locals.authenticated = true
+        res.locals.token = token
+        next()
+    } 
+
+    private _validateAdministratorCredentials(
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) {
+        const userType: string = res.locals.token.type
+        
+        if (userType !== 'administrator') {
+            res.status(403).send({
+                ok: false,
+                result: {
+                    error: 'User does not have enough permissions to make the required operation.',
+                },
+            })
+            return
+        }
+
+        next()
+    }
+
+    private async _sendUsers(
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) {
         const sendSuccessResponse = (users: User[]) =>
             res.send({ ok: true, result: { users } })
         const sendFailResponse = (error: string) =>
@@ -178,7 +229,7 @@ export class UserWebService {
         const sendSuccessResponse = (token: string) =>
             res.send({ ok: true, result: { token } })
         const sendFailResponse = (error: string) =>
-            res.send({ ok: false, result: { error } })
+            res.status(401).send({ ok: false, result: { error } })
 
         this._userController.openUserSession(
             login,
