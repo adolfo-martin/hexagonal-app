@@ -7,6 +7,6 @@ export class OpenUserSessionCommand extends CommandAdapter {
         public readonly token: string,
     ) {
         super('OpenUserSessionCommand')
-        console.log(`OpenUserSessionCommand ${this.login}, ${this.password}, ${this.token}`)
+        console.log(`[OpenUserSessionCommand] ${this.login}, ${this.password}, ${this.token}`)
     }
 }

@@ -34,11 +34,7 @@ Application.run(runnable)
 
 webServiceUser.listen()
 
-try {
-    testRestApi()
-} catch (error) {
-
-}
+testRestApi()
 
 function runnable() {
     commandBus.register(
@@ -65,6 +61,40 @@ function runnable() {
 function testRestApi() {
     testWrongUserCredentials()
     testRightUserCredentials()
+    testRightFindUsers()
+}
+
+function testRightFindUsers() {
+    const url = 'http://127.0.0.1:5000/api/users'
+    
+    const data = {
+        login: 'adolfo',
+        password: 'wrong',
+    }
+
+    function createXHR() {
+        return new XMLHttpRequest();
+    }
+    
+    ajax({
+        url,
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        createXHR,
+        crossDomain: true,
+        // withCredentials: false,
+        body: JSON.stringify(data),
+    })
+    .pipe(
+        map(response => console.error('[FAIL] Wrong user.')),
+        // @ts-ignore: Unreachable code error
+        catchError(_ => console.log('[OK] Wrong user.')),
+    )
+    .subscribe()
+}
 
     function testWrongUserCredentials() {
         const url = 'http://127.0.0.1:5000/api/user/authenticate'
@@ -129,7 +159,6 @@ function testRestApi() {
         )
         .subscribe()
     }
-}
 
 
     // const response = await fetch(authUrl, {

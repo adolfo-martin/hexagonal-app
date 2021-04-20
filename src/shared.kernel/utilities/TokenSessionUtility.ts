@@ -15,7 +15,7 @@ export class TokenSessionUtility {
         return jwt.sign(
             data,
             TokenSessionUtility.SERVER_PRIVATE_KEY,
-            { expiresIn: 30 }
+            { expiresIn: 84000 }
         )
     }
 

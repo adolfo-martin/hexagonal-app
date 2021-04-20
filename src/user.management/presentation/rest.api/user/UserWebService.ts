@@ -138,6 +138,7 @@ export class UserWebService {
         res: express.Response,
         next: express.NextFunction
     ) {
+        console.log('###################', res.locals.token.type)
         const userType: string = res.locals.token.type
         
         if (userType !== 'administrator') {
