@@ -1,6 +1,7 @@
 import { Application } from "../shared.kernel/Application"
 import { DomainEventDispatcher } from "../shared.kernel/event/DomainEventDispatcher"
 import { CreateUserCommandHandler } from "./application/command.handler/CreateUserCommandHandler"
+import { OpenAdministratorSessionCommandHandler } from "./application/command.handler/OpenAdministratorSessionCommandHandler"
 import { OpenUserSessionCommandHandler } from "./application/command.handler/OpenUserSessionCommandHandler"
 import { GetAllUsersQueryHandler } from "./application/query.handler/GetAllUsersQueryHandler"
 import { GetUserByIdQueryHandler } from "./application/query.handler/GetUserByIdQueryHandler"
@@ -32,13 +33,18 @@ webServiceUser.listen()
 
 function runnable() {
     commandBus.register(
-        'CreateUserCommand',
-        new CreateUserCommandHandler(userService)
+        'OpenAdministratorSessionCommand',
+        new OpenAdministratorSessionCommandHandler(userService)
     )
 
     commandBus.register(
         'OpenUserSessionCommand',
         new OpenUserSessionCommandHandler(userService)
+    )
+
+    commandBus.register(
+        'CreateUserCommand',
+        new CreateUserCommandHandler(userService)
     )
 
     queryBus.register(

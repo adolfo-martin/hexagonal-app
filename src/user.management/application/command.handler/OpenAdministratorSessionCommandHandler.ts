@@ -4,14 +4,14 @@ import { CommandInterface } from "../../../shared.kernel/command/CommandInterfac
 import { OpenUserSessionCommand } from "../../domain/command/OpenUserSessionCommand";
 import { UserServiceInterface } from "../../domain/service/UserServiceInterface";
 
-export class OpenUserSessionCommandHandler implements CommandHandlerInterface {
+export class OpenAdministratorSessionCommandHandler implements CommandHandlerInterface {
 
     public constructor(private _userService: UserServiceInterface) { }
 
-    handle(command: CommandInterface): void {
+    async handle(command: CommandInterface): Promise<void> {
         if (!(command instanceof OpenUserSessionCommand)) {
             throw new CommandBusError(
-                "OpenUserSessionCommandHandler can only execute OpenUserSessionCommand"
+                "OpenAdministratorSessionCommandHandler can only execute OpenAdministratorSessionCommand"
             )
         }
 
@@ -23,12 +23,15 @@ export class OpenUserSessionCommandHandler implements CommandHandlerInterface {
         }
 
         try {
-            this._userService.validateUserCredentials(login, password)
-                .then((isValid: boolean) =>
-                    isValid
-                        ? command.executeSuccessCallback(undefined)
-                        : command.executeFailCallback('Argument login or password is wrong')
-                )
+            const isValid = await this._userService.validateUserCredentials(login, password)
+            isValid
+                ? command.executeSuccessCallback(undefined)
+                : command.executeFailCallback('Argument login or password is wrong')
+
+            const isAdministrator = await this._userService.validateAdministratorCredentials(login, password)
+            isAdministrator
+                ? command.executeSuccessCallback(undefined)
+                : command.executeFailCallback('The user is not an administrator')
         } catch (error) {
             command.executeFailCallback(error.message)
         }

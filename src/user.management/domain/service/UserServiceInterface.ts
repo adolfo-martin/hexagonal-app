@@ -10,4 +10,5 @@ export interface UserServiceInterface {
         type: string
     ): Promise<User>
     validateUserCredentials(id: string, password: string): Promise<boolean>
+    validateAdministratorCredentials(id: string, password: string): Promise<boolean>
 }

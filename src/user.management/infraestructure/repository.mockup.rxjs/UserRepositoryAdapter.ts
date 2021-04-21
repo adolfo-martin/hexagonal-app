@@ -1,5 +1,4 @@
 import { UserRepository } from './UserRepository'
-import { User as UserP } from './User'
 import { map, mergeMap } from 'rxjs/operators'
 import { User } from '../../domain/model/User'
 import { UserRepositoryInterface } from '../../domain/repository/UserRepositoryInterface'
@@ -18,7 +17,7 @@ export class UserRepositoryAdapter implements UserRepositoryInterface {
             .pipe(
                 mergeMap(userP =>
                     iif(
-                        () => userP === undefined,
+                        () => userP !== undefined,
                         // @ts-ignore: Unreachable code error
                         of(userP).pipe(map(({ id, login, password, type }) => new User(id, login, password, type))),
                         EMPTY

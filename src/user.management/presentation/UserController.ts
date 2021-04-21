@@ -2,6 +2,7 @@ import { CommandBusInterface } from '../../shared.kernel/command/CommandBusInter
 import { QueryBusInterface } from '../../shared.kernel/query/QueryBusInterface'
 import { UuidGenerator } from '../../shared.kernel/utilities/UuidGenerator'
 import { CreateUserCommand } from '../domain/command/CreateUserCommand'
+import { OpenAdministratorSessionCommand } from '../domain/command/OpenAdministratorSessionCommand'
 import { OpenUserSessionCommand } from '../domain/command/OpenUserSessionCommand'
 import { GetAllUsersQuery } from '../domain/query/GetAllUsersQuery'
 import { GetUserByIdQuery } from '../domain/query/GetUserByIdQuery'
@@ -51,11 +52,22 @@ export class UserController {
     public openUserSession(
         login: string,
         password: string,
-        token: string,
         successCallback: Function,
         failCallback: Function
     ) {
-        const command = new OpenUserSessionCommand(login, password, token)
+        const command = new OpenUserSessionCommand(login, password)
+        command.setSuccessCallback(successCallback)
+        command.setFailCallback(failCallback)
+        this._commandBus.execute(command)
+    }
+
+    public openAdministratorSession(
+        login: string,
+        password: string,
+        successCallback: Function,
+        failCallback: Function
+    ) {
+        const command = new OpenAdministratorSessionCommand(login, password)
         command.setSuccessCallback(successCallback)
         command.setFailCallback(failCallback)
         this._commandBus.execute(command)

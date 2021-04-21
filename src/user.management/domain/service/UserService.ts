@@ -22,6 +22,26 @@ export class UserService implements UserServiceInterface {
         }
     }
 
+    public async validateAdministratorCredentials(
+        login: string,
+        password: string
+    ): Promise<boolean> {
+        const user = await this._userRepository.retrieveUserByLoginAndPassword(login, password)
+        if (!user) {
+            return false
+        }
+
+        if (!user.isValidPassword(password)) {
+            return false
+        }
+        
+        if (!user.isAdministrator()) {
+            return false
+        }
+
+        return true
+    }
+
     public async getAllUsers(): Promise<User[]> {
         const users = await this._userRepository.retrieveAllUsers()
         return users

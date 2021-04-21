@@ -66,6 +66,11 @@ export class UserWebService {
             '/api/user/authenticate',
             this._openUserSession.bind(this)
         )
+
+        this._app.post(
+            '/api/user/authenticate-administrator',
+            this._openAdministratorSession.bind(this)
+        )
     }
 
     private _configureInvalidRoutes() {
@@ -221,7 +226,7 @@ export class UserWebService {
 
         const token = TokenSessionUtility.generateToken(login, remoteAddress)
 
-        const sendSuccessResponse = (token: string) =>
+        const sendSuccessResponse = (_: any) =>
             res.send({ ok: true, result: { token } })
         const sendFailResponse = (error: string) =>
             res.status(401).send({ ok: false, result: { error } })
@@ -229,7 +234,37 @@ export class UserWebService {
         this._userController.openUserSession(
             login,
             password,
-            token,
+            sendSuccessResponse,
+            sendFailResponse
+        )
+    }
+
+    private async _openAdministratorSession(
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) {
+        const login: string = req.body.login
+        const password: string = req.body.password
+        const remoteAddress = req.socket.remoteAddress
+        if (!remoteAddress) {
+            res.status(401).send({
+                ok: false,
+                result: { error: 'Cannot get remote access.' },
+            })
+            return
+        }
+
+        const token = TokenSessionUtility.generateToken(login, remoteAddress, 'administrator')
+
+        const sendSuccessResponse = (_: any) =>
+            res.send({ ok: true, result: { token } })
+        const sendFailResponse = (error: string) =>
+            res.status(401).send({ ok: false, result: { error } })
+
+        this._userController.openAdministratorSession(
+            login,
+            password,
             sendSuccessResponse,
             sendFailResponse
         )

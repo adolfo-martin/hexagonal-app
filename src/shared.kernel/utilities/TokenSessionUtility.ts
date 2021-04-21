@@ -9,9 +9,10 @@ export class TokenSessionUtility {
 
     public static generateToken(
         login: string,
-        remoteAddress: string
+        remoteAddress: string,
+        type?: string
     ): string {
-        const data = { login, remoteAddress }
+        const data = { login, remoteAddress, type }
         return jwt.sign(
             data,
             TokenSessionUtility.SERVER_PRIVATE_KEY,

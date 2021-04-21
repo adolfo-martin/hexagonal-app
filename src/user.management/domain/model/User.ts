@@ -9,4 +9,8 @@ export class User {
     public isValidPassword(password: string): boolean {
         return password === this.password ? true : false
     }
+
+    public isAdministrator(): boolean {
+        return this.type === 'administrator'
+    }
 }
