@@ -43,22 +43,22 @@ export class UserWebService {
     private _configureValidRoutes() {
         this._app.get(
             '/api/users',
-            this._validateToken.bind(this), 
-            this._validateAdministratorCredentials.bind(this), 
+            this._validateToken.bind(this),
+            this._validateAdministratorCredentials.bind(this),
             this._sendUsers.bind(this)
         )
 
         this._app.get(
-            '/api/user/:id', 
-            this._validateToken.bind(this), 
-            this._validateAdministratorCredentials.bind(this), 
+            '/api/user/:id',
+            this._validateToken.bind(this),
+            this._validateAdministratorCredentials.bind(this),
             this._sendUser.bind(this)
         )
 
         this._app.post(
-            '/api/user', 
-            this._validateToken.bind(this), 
-            this._validateAdministratorCredentials.bind(this), 
+            '/api/user',
+            this._validateToken.bind(this),
+            this._validateAdministratorCredentials.bind(this),
             this._createUser.bind(this)
         )
 
@@ -131,7 +131,7 @@ export class UserWebService {
         res.locals.authenticated = true
         res.locals.token = token
         next()
-    } 
+    }
 
     private _validateAdministratorCredentials(
         req: express.Request,
@@ -140,7 +140,7 @@ export class UserWebService {
     ) {
         console.log('###################', res.locals.token.type)
         const userType: string = res.locals.token.type
-        
+
         if (userType !== 'administrator') {
             res.status(403).send({
                 ok: false,
@@ -174,16 +174,10 @@ export class UserWebService {
     ) {
         const id: string = req.params.id
 
-        const sendSuccessResponse = (user: User) =>
-            res.send({ ok: true, result: { user } })
-        const sendFailResponse = (error: string) =>
-            res.send({ ok: false, result: { error } })
+        const sendSuccessResponse = (user: User) => res.send({ ok: true, result: { user } })
+        const sendFailResponse = (error: string) => res.send({ ok: false, result: { error } })
 
-        this._userController.getUserById(
-            id,
-            sendSuccessResponse,
-            sendFailResponse
-        )
+        this._userController.getUserById(id, sendSuccessResponse, sendFailResponse)
     }
 
     private async _createUser(

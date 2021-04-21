@@ -8,17 +8,18 @@ export class UserService implements UserServiceInterface {
     constructor(
         private _domainEventDispatcher: DomainEventDispatcher,
         private _userRepository: UserRepositoryInterface
-    ) {}
+    ) { }
 
     public async validateUserCredentials(
         login: string,
         password: string
     ): Promise<boolean> {
-        const user = await this._userRepository.retrieveUserByLoginAndPassword(
-            login,
-            password
-        )
-        return user.isValidPassword(password)
+        const user = await this._userRepository.retrieveUserByLoginAndPassword(login, password)
+        if (user) {
+            return user.isValidPassword(password)
+        } else {
+            return false
+        }
     }
 
     public async getAllUsers(): Promise<User[]> {
@@ -26,7 +27,7 @@ export class UserService implements UserServiceInterface {
         return users
     }
 
-    public async getUserById(id: string): Promise<User> {
+    public async getUserById(id: string): Promise<User | undefined> {
         const user = await this._userRepository.retrieveUserById(id)
         return user
     }

@@ -1,34 +1,32 @@
 import { UserRepository } from './UserRepository'
 import { User as UserP } from './User'
-import { map } from 'rxjs/operators'
+import { map, mergeMap } from 'rxjs/operators'
 import { User } from '../../domain/model/User'
 import { UserRepositoryInterface } from '../../domain/repository/UserRepositoryInterface'
+import { EMPTY, iif, of } from 'rxjs'
 
 export class UserRepositoryAdapter implements UserRepositoryInterface {
     retrieveUserByLoginAndPassword(
         login: string,
         password: string
-    ): Promise<User> {
+    ): Promise<User | undefined> {
         // @ts-ignore: Unreachable code error
-        const userPromise: Promise<User> = UserRepository.getByLoginPassword$(
+        const userPromise: Promise<User | undefined> = UserRepository.getByLoginPassword$(
             login,
             password
         )
             .pipe(
-                map(userP =>
-                    userP
-                        ? userP
-                        : new UserP('void', 'undefined', 'u', 'normal')
-                ),
-                map(
-                    ({ id, login, password, type }) =>
-                        new User(id, login, password, type)
+                mergeMap(userP =>
+                    iif(
+                        () => userP === undefined,
+                        // @ts-ignore: Unreachable code error
+                        of(userP).pipe(map(({ id, login, password, type }) => new User(id, login, password, type))),
+                        EMPTY
+                    )
                 )
             )
             .toPromise()
-        // if (!userP) {
-        //     throw new UserError(`There is not an user with id ${id}`)
-        // }
+
         return userPromise
     }
 
@@ -48,18 +46,17 @@ export class UserRepositoryAdapter implements UserRepositoryInterface {
         return usersPromise
     }
 
-    retrieveUserById(id: string): Promise<User> {
+    retrieveUserById(id: string): Promise<User | undefined> {
         // @ts-ignore: Unreachable code error
-        const userPromise: Promise<User> = UserRepository.getById$(id)
+        const userPromise: Promise<User | undefined> = UserRepository.getById$(id)
             .pipe(
-                map(userP =>
-                    userP
-                        ? userP
-                        : new UserP('void', 'undefined', 'u', 'normal')
-                ),
-                map(
-                    ({ id, login, password, type }) =>
-                        new User(id, login, password, type)
+                mergeMap(userP =>
+                    iif(
+                        () => userP === undefined,
+                        // @ts-ignore: Unreachable code error
+                        of(userP).pipe(map(({ id, login, password, type }) => new User(id, login, password, type))),
+                        EMPTY
+                    )
                 )
             )
             .toPromise()

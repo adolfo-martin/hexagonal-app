@@ -2,7 +2,7 @@ import { User } from '../model/User'
 
 export interface UserServiceInterface {
     getAllUsers(): Promise<User[]>
-    getUserById(id: string): Promise<User>
+    getUserById(id: string): Promise<User | undefined>
     createUser(
         id: string,
         login: string,
