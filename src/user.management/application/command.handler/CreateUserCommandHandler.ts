@@ -7,7 +7,7 @@ import { UserServiceInterface } from '../../domain/service/UserServiceInterface'
 export class CreateUserCommandHandler implements CommandHandlerInterface {
     public constructor(private _userService: UserServiceInterface) {}
 
-    public handle(command: CommandInterface): void {
+    public async handle(command: CommandInterface): Promise<void> {
         if (!(command instanceof CreateUserCommand)) {
             throw new CommandBusError(
                 'CreateUserCommandHandler can only execute CreateUserCommand'

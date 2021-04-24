@@ -1,8 +1,7 @@
-import { QueryBusError } from "../../../shared.kernel/query/QueryBusError"
-import { QueryBusInterface } from "../../../shared.kernel/query/QueryBusInterface"
-import { QueryHandlerInterface } from "../../../shared.kernel/query/QueryHandlerInterface"
-import { QueryInterface } from "../../../shared.kernel/query/QueryInterface"
-
+import { QueryBusError } from "../query/QueryBusError"
+import { QueryBusInterface } from "../query/QueryBusInterface"
+import { QueryHandlerInterface } from "../query/QueryHandlerInterface"
+import { QueryInterface } from "../query/QueryInterface"
 
 export class SynchronousQueryBus implements QueryBusInterface {
     private _handlers = new Map<string, QueryHandlerInterface>()

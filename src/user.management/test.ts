@@ -7,8 +7,6 @@ import { GetUserByIdQueryHandler } from "./application/query.handler/GetUserById
 import { UserCreatedDomainEvent } from "./domain/event/UserCreatedDomainEvent"
 import { UserService } from "./domain/service/UserService"
 import { UserServiceInterface } from "./domain/service/UserServiceInterface"
-import { SynchronousCommmandBus } from "./infraestructure/bus.synchronous/SynchronousCommandBus"
-import { SynchronousQueryBus } from "./infraestructure/bus.synchronous/SynchronousQueryBus"
 import { UserRepositoryAdapter } from "./infraestructure/repository.mockup.rxjs/UserRepositoryAdapter"
 import { UserWebService } from "./presentation/rest.api/user/UserWebService"
 
@@ -16,6 +14,8 @@ import { ajax } from 'rxjs/ajax'
 // @ts-ignore: Unreachable code error
 import { XMLHttpRequest } from 'xmlhttprequest'
 import { map, catchError } from "rxjs/operators"
+import { SynchronousCommmandBus } from "../shared.kernel/bus.synchronous/SynchronousCommandBus"
+import { SynchronousQueryBus } from "../shared.kernel/bus.synchronous/SynchronousQueryBus"
 
 const commandBus = new SynchronousCommmandBus()
 const queryBus = new SynchronousQueryBus()

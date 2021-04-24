@@ -143,9 +143,12 @@ export class UserWebService {
         res: express.Response,
         next: express.NextFunction
     ) {
-        console.log('###################', res.locals.token.type)
-        const userType: string = res.locals.token.type
-
+        const data = TokenSessionUtility.decodeToken(res.locals.token)
+        
+        // @ts-ignore: Unreachable code error
+        console.log('###################', data.type)
+        // @ts-ignore: Unreachable code error
+        const userType: string = data.type
         if (userType !== 'administrator') {
             res.status(403).send({
                 ok: false,

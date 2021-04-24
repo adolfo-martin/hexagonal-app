@@ -1,7 +1,8 @@
-import { CommandBusError } from "../../../shared.kernel/command/CommandBusError"
-import { CommandBusInterface } from "../../../shared.kernel/command/CommandBusInterface"
-import { CommandHandlerInterface } from "../../../shared.kernel/command/CommandHandlerInterface"
-import { CommandInterface } from "../../../shared.kernel/command/CommandInterface"
+import { CommandBusError } from "../command/CommandBusError"
+import { CommandBusInterface } from "../command/CommandBusInterface"
+import { CommandHandlerInterface } from "../command/CommandHandlerInterface"
+import { CommandInterface } from "../command/CommandInterface"
+
 
 export class SynchronousCommmandBus implements CommandBusInterface {
     private _handlers = new Map<string, CommandHandlerInterface>()
@@ -10,7 +11,7 @@ export class SynchronousCommmandBus implements CommandBusInterface {
         this._handlers.set(commandClassName, handler)
     }
 
-    execute(command: CommandInterface): void {
+    async execute(command: CommandInterface): Promise<void> {
         if (!command.className) {
             throw new CommandBusError('Command class name is needed')
         }
@@ -21,7 +22,6 @@ export class SynchronousCommmandBus implements CommandBusInterface {
 
         // @ts-ignore: Unreachable code error
         const handler: CommandHandlerInterface = this._handlers.get(command.className)
-        handler.handle(command)
+        return handler.handle(command)
     }
-
 }

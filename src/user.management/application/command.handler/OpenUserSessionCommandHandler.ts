@@ -8,7 +8,7 @@ export class OpenUserSessionCommandHandler implements CommandHandlerInterface {
 
     public constructor(private _userService: UserServiceInterface) { }
 
-    handle(command: CommandInterface): void {
+    async handle(command: CommandInterface): Promise<void> {
         if (!(command instanceof OpenUserSessionCommand)) {
             throw new CommandBusError(
                 "OpenUserSessionCommandHandler can only execute OpenUserSessionCommand"

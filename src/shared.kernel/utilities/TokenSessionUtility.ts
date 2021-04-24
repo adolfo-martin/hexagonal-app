@@ -49,4 +49,26 @@ export class TokenSessionUtility {
             throw error
         }
     }
+
+    public static decodeToken(token: string): Object | undefined {
+        if (!token) {
+            return undefined
+        }
+
+        try {
+            const data: Object = jwt.verify(token, TokenSessionUtility.SERVER_PRIVATE_KEY)
+            return data
+        } catch (error: TokenExpiredError) {
+            if (error instanceof JsonWebTokenError) {
+                return undefined
+            }
+
+            if (error instanceof TokenExpiredError) {
+                return undefined
+            }
+
+            console.log(error)
+            throw error
+        }
+    }
 }

@@ -1,6 +1,7 @@
 import { CommandBusError } from "../../../shared.kernel/command/CommandBusError";
 import { CommandHandlerInterface } from "../../../shared.kernel/command/CommandHandlerInterface";
 import { CommandInterface } from "../../../shared.kernel/command/CommandInterface";
+import { OpenAdministratorSessionCommand } from "../../domain/command/OpenAdministratorSessionCommand";
 import { OpenUserSessionCommand } from "../../domain/command/OpenUserSessionCommand";
 import { UserServiceInterface } from "../../domain/service/UserServiceInterface";
 
@@ -9,7 +10,7 @@ export class OpenAdministratorSessionCommandHandler implements CommandHandlerInt
     public constructor(private _userService: UserServiceInterface) { }
 
     async handle(command: CommandInterface): Promise<void> {
-        if (!(command instanceof OpenUserSessionCommand)) {
+        if (!(command instanceof OpenAdministratorSessionCommand)) {
             throw new CommandBusError(
                 "OpenAdministratorSessionCommandHandler can only execute OpenAdministratorSessionCommand"
             )
@@ -24,14 +25,18 @@ export class OpenAdministratorSessionCommandHandler implements CommandHandlerInt
 
         try {
             const isValid = await this._userService.validateUserCredentials(login, password)
-            isValid
-                ? command.executeSuccessCallback(undefined)
-                : command.executeFailCallback('Argument login or password is wrong')
+            if (!isValid) {
+                command.executeFailCallback('Argument login or password is wrong')
+                return
+            }
 
             const isAdministrator = await this._userService.validateAdministratorCredentials(login, password)
-            isAdministrator
-                ? command.executeSuccessCallback(undefined)
-                : command.executeFailCallback('The user is not an administrator')
+            if (!isAdministrator) {
+                command.executeFailCallback('The user is not an administrator')
+                return
+            }
+
+            command.executeSuccessCallback(undefined)
         } catch (error) {
             command.executeFailCallback(error.message)
         }

@@ -1,4 +1,6 @@
 import { Application } from "../shared.kernel/Application"
+import { SynchronousCommmandBus } from "../shared.kernel/bus.synchronous/SynchronousCommandBus"
+import { SynchronousQueryBus } from "../shared.kernel/bus.synchronous/SynchronousQueryBus"
 import { DomainEventDispatcher } from "../shared.kernel/event/DomainEventDispatcher"
 import { CreateUserCommandHandler } from "./application/command.handler/CreateUserCommandHandler"
 import { OpenAdministratorSessionCommandHandler } from "./application/command.handler/OpenAdministratorSessionCommandHandler"
@@ -8,8 +10,6 @@ import { GetUserByIdQueryHandler } from "./application/query.handler/GetUserById
 import { UserCreatedDomainEvent } from "./domain/event/UserCreatedDomainEvent"
 import { UserService } from "./domain/service/UserService"
 import { UserServiceInterface } from "./domain/service/UserServiceInterface"
-import { SynchronousCommmandBus } from "./infraestructure/bus.synchronous/SynchronousCommandBus"
-import { SynchronousQueryBus } from "./infraestructure/bus.synchronous/SynchronousQueryBus"
 import { UserRepositoryAdapter } from "./infraestructure/repository.mockup.rxjs/UserRepositoryAdapter"
 import { UserWebService } from "./presentation/rest.api/user/UserWebService"
 
