@@ -72,7 +72,7 @@ function testRestApi() {
     testRightAdministratorCredentials()
     // testRightFindUsers()
 
-    setTimeout(webServiceUser.close, 10000)
+    //setTimeout(webServiceUser.close, 10000)
 }
 
 // function testRightFindUsers() {
@@ -172,10 +172,6 @@ function testWrongAdministratorCredentials() {
         password: 'm',
     }
 
-    function createXHR() {
-        return new XMLHttpRequest();
-    }
-
     ajax({
         url,
         method: 'post',
@@ -183,14 +179,14 @@ function testWrongAdministratorCredentials() {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         },
-        createXHR,
+        createXHR: () => new XMLHttpRequest(),
         crossDomain: true,
         // withCredentials: false,
         body: JSON.stringify(data),
     })
         .pipe(
             map(response => console.error('[FAIL] Wrong administrator credentials.')),
-            catchError(response => of(response.status === 403 ? '[OK] Wrong administrator credentials.' : '[FAIL] Wrong administrator credentials.')),
+            catchError(response => of((response.status === 401 || response.status === 403) ? '[OK] Wrong administrator credentials.' : '[FAIL] Wrong administrator credentials.')),
         )
         .subscribe(console.log)
 }

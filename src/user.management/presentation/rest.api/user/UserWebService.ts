@@ -97,7 +97,7 @@ export class UserWebService {
     }
 
     public close(): void {
-        this._server.close()
+        this._server.close(() => console.log('Server closed'))
     }
 
     private _validateToken(
@@ -151,8 +151,6 @@ export class UserWebService {
     ) {
         const data = TokenSessionUtility.decodeToken(res.locals.token)
 
-        // @ts-ignore: Unreachable code error
-        console.log('###################', data.type)
         // @ts-ignore: Unreachable code error
         const userType: string = data.type
         if (userType !== 'administrator') {
