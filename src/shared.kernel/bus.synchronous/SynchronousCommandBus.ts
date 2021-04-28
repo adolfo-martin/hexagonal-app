@@ -22,6 +22,6 @@ export class SynchronousCommmandBus implements CommandBusInterface {
 
         // @ts-ignore: Unreachable code error
         const handler: CommandHandlerInterface = this._handlers.get(command.className)
-        return handler.handle(command)
+        await handler.handle(command)
     }
 }

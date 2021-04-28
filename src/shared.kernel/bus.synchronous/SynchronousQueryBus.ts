@@ -10,7 +10,7 @@ export class SynchronousQueryBus implements QueryBusInterface {
         this._handlers.set(commandClassName, handler)
     }
 
-    execute(command: QueryInterface): void {
+    async execute(command: QueryInterface): Promise<void> {
         if (!command.className) {
             throw new QueryBusError('Query class name is needed')
         }
@@ -21,7 +21,7 @@ export class SynchronousQueryBus implements QueryBusInterface {
 
         // @ts-ignore: Unreachable code error
         const handler: QueryHandlerInterface = this._handlers.get(command.className)
-        handler.handle(command)
-    }
+        await handler.handle(command)
 
+    }
 }

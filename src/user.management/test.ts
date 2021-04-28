@@ -16,6 +16,8 @@ import { XMLHttpRequest } from 'xmlhttprequest'
 import { map, catchError } from "rxjs/operators"
 import { SynchronousCommmandBus } from "../shared.kernel/bus.synchronous/SynchronousCommandBus"
 import { SynchronousQueryBus } from "../shared.kernel/bus.synchronous/SynchronousQueryBus"
+import { of } from "rxjs"
+import { OpenAdministratorSessionCommandHandler } from "./application/command.handler/OpenAdministratorSessionCommandHandler"
 
 const commandBus = new SynchronousCommmandBus()
 const queryBus = new SynchronousQueryBus()
@@ -43,6 +45,11 @@ function runnable() {
     )
 
     commandBus.register(
+        'OpenAdministratorSessionCommand',
+        new OpenAdministratorSessionCommandHandler(userService)
+    )
+
+    commandBus.register(
         'OpenUserSessionCommand',
         new OpenUserSessionCommandHandler(userService)
     )
@@ -61,21 +68,83 @@ function runnable() {
 function testRestApi() {
     testWrongUserCredentials()
     testRightUserCredentials()
-    testRightFindUsers()
+    testWrongAdministratorCredentials()
+    testRightAdministratorCredentials()
+    // testRightFindUsers()
+
+    setTimeout(webServiceUser.close, 10000)
 }
 
-function testRightFindUsers() {
-    const url = 'http://127.0.0.1:5000/api/users'
-    
+// function testRightFindUsers() {
+//     const url = 'http://127.0.0.1:5000/api/users'
+
+//     const data = {
+//         login: 'adolfo',
+//         password: 'wrong',
+//     }
+
+//     function createXHR() {
+//         return new XMLHttpRequest();
+//     }
+
+//     ajax({
+//         url,
+//         method: 'post',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Accept': 'application/json'
+//         },
+//         createXHR,
+//         crossDomain: true,
+//         // withCredentials: false,
+//         body: JSON.stringify(data),
+//     })
+//         .pipe(
+//             map(response => console.error('[FAIL] Right find users.')),
+//             catchError(response => of(response.status === 401 ? '[OK] Right find users.' : '[FAIL] Right find users.')),
+//         )
+//         .subscribe(console.log)
+// }
+
+function testWrongUserCredentials() {
+    const url = 'http://127.0.0.1:5000/api/user/authenticate'
+
     const data = {
         login: 'adolfo',
         password: 'wrong',
     }
 
+    ajax({
+        url,
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        createXHR: () => new XMLHttpRequest(),
+        crossDomain: true,
+        // withCredentials: false,
+        body: JSON.stringify(data),
+    })
+        .pipe(
+            map(response => console.error('[FAIL] Wrong user credentials.')),
+            catchError(response => of(response.status === 401 ? '[OK] Wrong user credentials.' : '[FAIL] Wrong user credentials.')),
+        )
+        .subscribe(console.log)
+}
+
+function testRightUserCredentials() {
+    const url = 'http://127.0.0.1:5000/api/user/authenticate'
+
+    const data = {
+        login: 'adolfo',
+        password: 'a',
+    }
+
     function createXHR() {
         return new XMLHttpRequest();
     }
-    
+
     ajax({
         url,
         method: 'post',
@@ -88,77 +157,74 @@ function testRightFindUsers() {
         // withCredentials: false,
         body: JSON.stringify(data),
     })
-    .pipe(
-        map(response => console.error('[FAIL] Wrong user.')),
-        // @ts-ignore: Unreachable code error
-        catchError(_ => console.log('[OK] Wrong user.')),
-    )
-    .subscribe()
+        .pipe(
+            map(response => console.error('[OK] Right user credentials.')),
+            catchError(response => of('[FAIL] Right user credentials.')),
+        )
+        .subscribe(console.log)
 }
 
-    function testWrongUserCredentials() {
-        const url = 'http://127.0.0.1:5000/api/user/authenticate'
-        
-        const data = {
-            login: 'adolfo',
-            password: 'wrong',
-        }
+function testWrongAdministratorCredentials() {
+    const url = 'http://127.0.0.1:5000/api/user/authenticate-administrator'
 
-        function createXHR() {
-            return new XMLHttpRequest();
-        }
-        
-        ajax({
-            url,
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            createXHR,
-            crossDomain: true,
-            // withCredentials: false,
-            body: JSON.stringify(data),
-        })
-        .pipe(
-            map(response => console.error('[FAIL] Wrong user.')),
-            // @ts-ignore: Unreachable code error
-            catchError(_ => console.log('[OK] Wrong user.')),
-        )
-        .subscribe()
+    const data = {
+        login: 'maria',
+        password: 'm',
     }
 
-    function testRightUserCredentials() {
-        const url = 'http://127.0.0.1:5000/api/user/authenticate'
-        
-        const data = {
-            login: 'adolfo',
-            password: 'a',
-        }
-
-        function createXHR() {
-            return new XMLHttpRequest();
-        }
-        
-        ajax({
-            url,
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            createXHR,
-            crossDomain: true,
-            // withCredentials: false,
-            body: JSON.stringify(data),
-        })
-        .pipe(
-            map(response => console.error('[OK] Right user.')),
-            // @ts-ignore: Unreachable code error
-            catchError(_ => console.log('[Wrong] Right user.')),
-        )
-        .subscribe()
+    function createXHR() {
+        return new XMLHttpRequest();
     }
+
+    ajax({
+        url,
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        createXHR,
+        crossDomain: true,
+        // withCredentials: false,
+        body: JSON.stringify(data),
+    })
+        .pipe(
+            map(response => console.error('[FAIL] Wrong administrator credentials.')),
+            catchError(response => of(response.status === 403 ? '[OK] Wrong administrator credentials.' : '[FAIL] Wrong administrator credentials.')),
+        )
+        .subscribe(console.log)
+}
+
+function testRightAdministratorCredentials() {
+    const url = 'http://127.0.0.1:5000/api/user/authenticate-administrator'
+
+    const data = {
+        login: 'adolfo',
+        password: 'a',
+    }
+
+    function createXHR() {
+        return new XMLHttpRequest();
+    }
+
+    ajax({
+        url,
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        createXHR,
+        crossDomain: true,
+        // withCredentials: false,
+        body: JSON.stringify(data),
+    })
+        .pipe(
+            map(response => console.error('[OK] Right administrator credentials.')),
+            catchError(response => of('[FAIL] Right administrator credentials.')),
+        )
+        .subscribe(console.log)
+}
 
 
     // const response = await fetch(authUrl, {

@@ -6,6 +6,5 @@ export class OpenAdministratorSessionCommand extends CommandAdapter {
         public readonly password: string,
     ) {
         super('OpenAdministratorSessionCommand')
-        console.log(`[OpenAdministratorSessionCommand] ${this.login}, ${this.password}`)
     }
 }

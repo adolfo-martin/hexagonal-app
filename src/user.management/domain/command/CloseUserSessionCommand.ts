@@ -7,6 +7,5 @@ export class CloseUserSessionCommand extends CommandAdapter {
         public readonly password: string
     ) {
         super('CloseUserSessionCommand')
-        console.log(`CloseUserSessionCommand ${this.id}, ${this.login}, ${this.password}`)
     }
 }

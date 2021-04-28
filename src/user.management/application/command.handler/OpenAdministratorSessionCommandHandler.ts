@@ -1,9 +1,8 @@
-import { CommandBusError } from "../../../shared.kernel/command/CommandBusError";
-import { CommandHandlerInterface } from "../../../shared.kernel/command/CommandHandlerInterface";
-import { CommandInterface } from "../../../shared.kernel/command/CommandInterface";
-import { OpenAdministratorSessionCommand } from "../../domain/command/OpenAdministratorSessionCommand";
-import { OpenUserSessionCommand } from "../../domain/command/OpenUserSessionCommand";
-import { UserServiceInterface } from "../../domain/service/UserServiceInterface";
+import { CommandBusError } from '../../../shared.kernel/command/CommandBusError';
+import { CommandHandlerInterface } from '../../../shared.kernel/command/CommandHandlerInterface';
+import { CommandInterface } from '../../../shared.kernel/command/CommandInterface';
+import { OpenAdministratorSessionCommand } from '../../domain/command/OpenAdministratorSessionCommand';
+import { UserServiceInterface } from '../../domain/service/UserServiceInterface';
 
 export class OpenAdministratorSessionCommandHandler implements CommandHandlerInterface {
 
@@ -11,9 +10,8 @@ export class OpenAdministratorSessionCommandHandler implements CommandHandlerInt
 
     async handle(command: CommandInterface): Promise<void> {
         if (!(command instanceof OpenAdministratorSessionCommand)) {
-            throw new CommandBusError(
-                "OpenAdministratorSessionCommandHandler can only execute OpenAdministratorSessionCommand"
-            )
+            command.executeFailCallback('OpenAdministratorSessionCommandHandler can only execute OpenAdministratorSessionCommand')
+            throw new CommandBusError('OpenAdministratorSessionCommandHandler can only execute OpenAdministratorSessionCommand')
         }
 
         const { login, password } = command

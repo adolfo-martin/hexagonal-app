@@ -13,6 +13,8 @@ import { TokenSessionUtility } from '../../../../shared.kernel/utilities/TokenSe
 export class UserWebService {
     // @ts-ignore: Unreachable code error
     private _app: express.Express
+    // @ts-ignore: Unreachable code error
+    private _server
     private _userController: UserController
 
     constructor(
@@ -89,9 +91,13 @@ export class UserWebService {
     }
 
     public listen(): void {
-        this._app.listen(this._port, () =>
+        this._server = this._app.listen(this._port, () =>
             console.log(`Server listening on port ${this._port}`)
         )
+    }
+
+    public close(): void {
+        this._server.close()
     }
 
     private _validateToken(
@@ -144,7 +150,7 @@ export class UserWebService {
         next: express.NextFunction
     ) {
         const data = TokenSessionUtility.decodeToken(res.locals.token)
-        
+
         // @ts-ignore: Unreachable code error
         console.log('###################', data.type)
         // @ts-ignore: Unreachable code error

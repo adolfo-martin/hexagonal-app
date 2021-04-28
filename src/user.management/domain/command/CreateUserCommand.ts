@@ -8,8 +8,5 @@ export class CreateUserCommand extends CommandAdapter {
         public readonly type: string
     ) {
         super('CreateUserCommand')
-        console.log(
-            `CreateUserCommand ${this.id}, ${this.login}, ${this.password}`
-        )
     }
 }

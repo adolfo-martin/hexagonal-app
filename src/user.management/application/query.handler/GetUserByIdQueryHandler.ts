@@ -7,11 +7,9 @@ import { GetUserByIdQuery } from "../../domain/query/GetUserByIdQuery"
 export class GetUserByIdQueryHandler implements QueryHandlerInterface {
     public constructor(private _userService: UserServiceInterface,) { }
 
-    public handle(query: QueryInterface): void {
+    public async handle(query: QueryInterface): Promise<void> {
         if (!(query instanceof GetUserByIdQuery)) {
-            throw new QueryBusError(
-                'GetUserByIdQueryHandler can only execute GetUserByIdQuery'
-            )
+            throw new QueryBusError('GetUserByIdQueryHandler can only execute GetUserByIdQuery')
         }
 
         const id = query.id
@@ -22,9 +20,8 @@ export class GetUserByIdQueryHandler implements QueryHandlerInterface {
         }
 
         try {
-            this._userService.getUserById(id).then(users => {
-                query.executeSuccessCallback(users)
-            })
+            const users = await this._userService.getUserById(id)
+            query.executeSuccessCallback(users)
         } catch (error) {
             query.executeFailCallback(error.message)
         }

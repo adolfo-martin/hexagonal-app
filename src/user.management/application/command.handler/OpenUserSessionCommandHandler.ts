@@ -1,8 +1,8 @@
-import { CommandBusError } from "../../../shared.kernel/command/CommandBusError";
-import { CommandHandlerInterface } from "../../../shared.kernel/command/CommandHandlerInterface";
-import { CommandInterface } from "../../../shared.kernel/command/CommandInterface";
-import { OpenUserSessionCommand } from "../../domain/command/OpenUserSessionCommand";
-import { UserServiceInterface } from "../../domain/service/UserServiceInterface";
+import { CommandBusError } from '../../../shared.kernel/command/CommandBusError';
+import { CommandHandlerInterface } from '../../../shared.kernel/command/CommandHandlerInterface';
+import { CommandInterface } from '../../../shared.kernel/command/CommandInterface';
+import { OpenUserSessionCommand } from '../../domain/command/OpenUserSessionCommand';
+import { UserServiceInterface } from '../../domain/service/UserServiceInterface';
 
 export class OpenUserSessionCommandHandler implements CommandHandlerInterface {
 
@@ -10,9 +10,8 @@ export class OpenUserSessionCommandHandler implements CommandHandlerInterface {
 
     async handle(command: CommandInterface): Promise<void> {
         if (!(command instanceof OpenUserSessionCommand)) {
-            throw new CommandBusError(
-                "OpenUserSessionCommandHandler can only execute OpenUserSessionCommand"
-            )
+            command.executeFailCallback('OpenUserSessionCommandHandler can only execute OpenUserSessionCommand')
+            throw new CommandBusError('OpenUserSessionCommandHandler can only execute OpenUserSessionCommand')
         }
 
         const { login, password } = command
@@ -23,12 +22,13 @@ export class OpenUserSessionCommandHandler implements CommandHandlerInterface {
         }
 
         try {
-            this._userService.validateUserCredentials(login, password)
-                .then((isValid: boolean) =>
-                    isValid
-                        ? command.executeSuccessCallback(undefined)
-                        : command.executeFailCallback('Argument login or password is wrong')
-                )
+            const isValid: boolean = await this._userService.validateUserCredentials(login, password)
+            if (!isValid) {
+                command.executeFailCallback('Argument login or password is wrong')
+                return
+            }
+
+            command.executeSuccessCallback(undefined)
         } catch (error) {
             command.executeFailCallback(error.message)
         }

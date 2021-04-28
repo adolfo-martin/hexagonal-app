@@ -7,17 +7,15 @@ import { GetAllUsersQuery } from "../../domain/query/GetAllUsersQuery"
 export class GetAllUsersQueryHandler implements QueryHandlerInterface {
     public constructor(private _userService: UserServiceInterface) { }
 
-    public handle(query: QueryInterface): void {
+    public async handle(query: QueryInterface): Promise<void> {
         if (!(query instanceof GetAllUsersQuery)) {
-            throw new QueryBusError(
-                'GetAllUsersQueryHandler can only execute GetAllUsersQuery'
-            )
+            query.executeFailCallback('GetAllUsersQueryHandler can only execute GetAllUsersQuery')
+            throw new QueryBusError('GetAllUsersQueryHandler can only execute GetAllUsersQuery')
         }
 
         try {
-            this._userService.getAllUsers().then(users => {
-                query.executeSuccessCallback(users)
-            })
+            const users = await this._userService.getAllUsers()
+            query.executeSuccessCallback(users)
         } catch (error) {
             query.executeFailCallback(error.message)
         }
